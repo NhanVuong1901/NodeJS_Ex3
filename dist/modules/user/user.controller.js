@@ -44,7 +44,7 @@ export class UserController {
     getByEmail = async (req, res) => {
         const { email } = req.query;
         const user = await this.userService.getByEmail(String(email));
-        res.json(ok(user));
+        res.json(ok({ data: user.email }));
     };
     // getByObjectId
     getById = async (req, res) => {
