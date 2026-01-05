@@ -1,4 +1,4 @@
-import type { ProductDatabase, ProductListQuery } from "./product.database.js";
+import type { ProductDatabase } from "./product.database.js";
 import type { ProductDoc } from "./product.model.js";
 export declare class ProductService {
     private readonly productDb;
@@ -9,6 +9,6 @@ export declare class ProductService {
     deleteById(id: string): Promise<{
         deleted: boolean;
     }>;
-    list(query: ProductListQuery): Promise<import("./product.database.js").ProductEntity[]>;
+    list(query: any): Promise<import("./product.database.js").ProductEntity[]>;
 }
 //# sourceMappingURL=product.service.d.ts.map

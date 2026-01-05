@@ -32,6 +32,13 @@ router.put(
   controller.updateById
 );
 
+router.patch(
+  "/:id",
+  requireAuth,
+  requireRole("admin"),
+  controller.updateById
+);
+
 router.delete(
   "/:id",
   requireAuth,

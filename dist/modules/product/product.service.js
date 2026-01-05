@@ -31,7 +31,28 @@ export class ProductService {
         return { deleted: true };
     }
     async list(query) {
-        return this.productDb.list(query);
+        const parsedQuery = {
+            q: typeof query.q === "string" ? query.q : undefined,
+            category: typeof query.category === "string" ? query.category : undefined,
+            tags: typeof query.tags === "string"
+                ? [query.tags]
+                : Array.isArray(query.tags)
+                    ? query.tags
+                    : undefined,
+            status: query.status === "active" || query.status === "inactive"
+                ? query.status
+                : undefined,
+            sort: query.sort === "az" ||
+                query.sort === "price_asc" ||
+                query.sort === "price_desc"
+                ? query.sort
+                : "az",
+            minPrice: query.minPrice !== undefined ? Number(query.minPrice) : undefined,
+            maxPrice: query.maxPrice !== undefined ? Number(query.maxPrice) : undefined,
+            page: Number(query.page ?? 1),
+            limit: Number(query.limit ?? 10),
+        };
+        return this.productDb.list(parsedQuery);
     }
 }
 //# sourceMappingURL=product.service.js.map

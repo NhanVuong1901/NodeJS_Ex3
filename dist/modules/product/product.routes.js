@@ -13,6 +13,7 @@ router.get("/:id", controller.findById);
 // admin only
 router.post("/", requireAuth, requireRole("admin"), controller.create);
 router.put("/:id", requireAuth, requireRole("admin"), controller.updateById);
+router.patch("/:id", requireAuth, requireRole("admin"), controller.updateById);
 router.delete("/:id", requireAuth, requireRole("admin"), controller.deleteById);
 export const productRouters = router;
 //# sourceMappingURL=product.routes.js.map
