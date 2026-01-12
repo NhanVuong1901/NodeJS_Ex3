@@ -17,7 +17,6 @@ export class ChatDatabase {
     before?: Date | undefined;
   }): Promise<ChatMessageEntity[]> {
     const filter: Filter<ChatMessageDoc> = {};
-
     if (params.before) filter.createdAt = { $lt: params.before };
 
     return this.col()

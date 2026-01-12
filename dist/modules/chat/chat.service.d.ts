@@ -10,7 +10,7 @@ export declare class ChatService {
     }): Promise<import("./chat.model.js").ChatMessageEntity>;
     listHistory(input: {
         limit?: string;
-        before?: Date;
+        before?: string;
     }): Promise<import("./chat.model.js").ChatMessageEntity[]>;
 }
 //# sourceMappingURL=chat.service.d.ts.map

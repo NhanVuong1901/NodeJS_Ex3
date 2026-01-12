@@ -1,12 +1,12 @@
 export declare const env: {
-    nodeEnv: string | undefined;
-    port: number;
-    mongoUri: string;
-    mongoDb: string;
-    jwtAccessSecret: string;
-    jwtRefreshSecret: string;
-    accessTokenTtlSeconds: number;
-    refreshTokenTtlSeconds: number;
-    refreshCookieName: string;
+    readonly nodeEnv: string;
+    readonly port: number;
+    readonly mongoUri: string;
+    readonly mongoDb: string;
+    readonly jwtAccessSecret: string;
+    readonly jwtRefreshSecret: string;
+    readonly accessTokenTtlSeconds: number;
+    readonly refreshTokenTtlSeconds: number;
+    readonly refreshCookieName: string;
 };
 //# sourceMappingURL=env.d.ts.map

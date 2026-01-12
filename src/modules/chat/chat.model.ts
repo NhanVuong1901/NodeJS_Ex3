@@ -4,7 +4,9 @@ export type ChatMessageDoc = {
   userId: ObjectId;
   userEmail: string;
   role: "customer" | "admin";
+
   text: string;
+
   createdAt: Date;
 };
 

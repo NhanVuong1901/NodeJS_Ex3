@@ -8,8 +8,16 @@ export class UserDatabase {
   private col() {
     return getDb().collection<UserDoc>("users");
   }
-  async list(): Promise<Array<UserDoc & { _id: ObjectId }>> {
-    return this.col().find({}).limit(50).toArray();
+
+  async list(): Promise<Array<UserEntity>> {
+    return this.col().find({}).limit(50).toArray() as Promise<UserEntity[]>;
+  }
+
+  async findPublicByEmail(email: string): Promise<UserEntity | null> {
+    return this.col().findOne(
+      { email },
+      { projection: { passwordHash: 0 } }
+    ) as Promise<UserEntity | null>;
   }
 
   async findByEmail(email: string): Promise<UserEntity | null> {

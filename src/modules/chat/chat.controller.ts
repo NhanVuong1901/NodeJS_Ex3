@@ -5,9 +5,9 @@ import { ok } from "../../utils/http.js";
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  listMessage = async (req: Request, res: Response) => {
+  // GET /api/chat/messages?limit=50&before=2026-01-05T00:00:00.000Z
+  listMessages = async (req: Request, res: Response) => {
     const messages = await this.chatService.listHistory(req.query as any);
-
     res.json(
       ok(
         messages.map((m) => ({

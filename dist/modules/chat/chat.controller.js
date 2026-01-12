@@ -4,7 +4,8 @@ export class ChatController {
     constructor(chatService) {
         this.chatService = chatService;
     }
-    listMessage = async (req, res) => {
+    // GET /api/chat/messages?limit=50&before=2026-01-05T00:00:00.000Z
+    listMessages = async (req, res) => {
         const messages = await this.chatService.listHistory(req.query);
         res.json(ok(messages.map((m) => ({
             id: m._id.toString(),

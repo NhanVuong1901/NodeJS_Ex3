@@ -6,7 +6,7 @@ export declare class UserController {
     list: (_req: Request, res: Response) => Promise<void>;
     register: (req: Request, res: Response) => Promise<void>;
     bulkRegister: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
-    getByEmail: (req: Request, res: Response) => Promise<void>;
+    getByEmail: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
     getById: (req: Request, res: Response) => Promise<void>;
     updateById: (req: Request, res: Response) => Promise<void>;
     deleteById: (req: Request, res: Response) => Promise<void>;

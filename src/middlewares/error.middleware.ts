@@ -11,5 +11,9 @@ export function errorMiddleware(
     return res.status(err.status).json({ error: err.payload });
   }
 
-  return res.status(500).json({ error: { message: "Internal Server Error" } });
+  return res.status(500).json({
+    error: {
+      message: "Internal Server Error!!!",
+    },
+  });
 }

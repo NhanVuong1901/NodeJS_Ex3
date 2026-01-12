@@ -19,37 +19,38 @@ export class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    // POST /api/auth/login
     login = async (req, res) => {
-        const { email, password } = req.body || {};
+        const { email, password } = req.body ?? {};
         const userAgent = req.headers["user-agent"];
         const ip = req.ip;
         const input = {
             email,
             password,
             ...(userAgent !== undefined ? { userAgent: userAgent } : {}),
-            ...(ip !== undefined ? { ip: ip } : {}),
+            ...(ip !== undefined ? { ip } : {}),
         };
         const { accessToken, refreshToken } = await this.authService.login(input);
         setRefreshCookie(res, refreshToken);
-        res.json(ok({ accessToken, refreshToken }));
-    };
-    logout = async (req, res) => {
-        const rt = req.cookies?.[env.refreshCookieName];
-        if (rt) {
-            await this.authService.logout(rt);
-            clearRefreshCookie(res);
-            res.json(ok({ loggedOut: true }));
-        }
+        res.json(ok({ accessToken }));
     };
     refresh = async (req, res) => {
         const rt = req.cookies?.[env.refreshCookieName];
         if (!rt) {
-            res.status(401).json({ message: "Refresh token missing" });
+            res
+                .status(401)
+                .json({ error: { message: "Missing refresh token cookie" } });
+            return;
         }
         const { accessToken, refreshToken } = await this.authService.refresh(rt);
         setRefreshCookie(res, refreshToken);
         res.json(ok({ accessToken }));
+    };
+    logout = async (req, res) => {
+        const rt = req.cookies?.[env.refreshCookieName];
+        if (rt)
+            await this.authService.logout(rt);
+        clearRefreshCookie(res);
+        res.json(ok({ loggedOut: true }));
     };
 }
 //# sourceMappingURL=auth.controller.js.map

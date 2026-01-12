@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NodeJS API UI</title>
+  </head>
+  <body>
+    <h1>NodeJS API Playground</h1>
+
+    <!-- AUTH -->
+    <h2>Auth</h2>
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <button onclick="logout()">Logout</button>
+
+    <hr />
+
+    <!-- USERS -->
+    <h2>Users (Admin)</h2>
+
+    <button onclick="getUsers()">Get All Users</button>
+    <br /><br />
+
+    <input id="userId" placeholder="User ID" />
+    <button onclick="getUserById()">Get by ID</button>
+    <button onclick="deleteUser()">Delete User</button>
+
+    <br /><br />
+
+    <input id="userEmail" placeholder="User Email" />
+    <button onclick="getUserByEmail()">Get by Email</button>
+
+    <hr />
+
+    <h3>Update User</h3>
+    <input id="updateUserId" placeholder="User ID" />
+    <br /><br />
+    <input id="updateEmail" placeholder="New Email (optional)" />
+    <br /><br />
+    <input id="updateRole" placeholder="Role (admin / customer)" />
+    <br /><br />
+    <button onclick="updateUserPut()">PUT Update</button>
+    <button onclick="updateUserPatch()">PATCH Update</button>
+
+    <!-- PRODUCTS -->
+    <h2>Products</h2>
+
+    <button onclick="getProducts()">Get All</button>
+    <button onclick="filterCategory()">By Category</button>
+    <button onclick="filterStatus()">By Status</button>
+    <button onclick="filterPrice()">By Price Range</button>
+    <button onclick="sortPriceAsc()">Sort Price ASC</button>
+    <button onclick="sortPriceDesc()">Sort Price DESC</button>
+
+    <br /><br />
+    <input id="category" placeholder="Category" />
+    <input id="status" placeholder="Status (active/inactive)" />
+    <input id="minPrice" placeholder="Min Price" />
+    <input id="maxPrice" placeholder="Max Price" />
+
+    <hr />
+
+    <!-- CHAT -->
+    <h2>Chat</h2>
+    <button onclick="getMessages()">Get Messages</button>
+
+    <hr />
+
+    <h2>Result</h2>
+    <pre id="output">No data</pre>
+
+    <script>
+      const API = "http://localhost:9999/api";
+      let accessToken = null;
+
+      function show(data) {
+        document.getElementById("output").textContent = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      }
+
+      function authHeader() {
+        return accessToken ? { Authorization: "Bearer " + accessToken } : {};
+      }
+
+      // ===== AUTH =====
+      async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const res = await fetch(API + "/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (res.ok) accessToken = data.data.accessToken;
+        show(data);
+      }
+
+      async function logout() {
+        const res = await fetch(API + "/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+        accessToken = null;
+        show(await res.json());
+      }
+
+      // ===== USERS =====
+      // ===== USERS =====
+
+      async function getUsers() {
+        const res = await fetch(API + "/users", {
+          headers: authHeader(),
+        });
+        show(await res.json());
+      }
+
+      async function getUserById() {
+        const id = document.getElementById("userId").value;
+        const res = await fetch(API + "/users/" + id, {
+          headers: authHeader(),
+        });
+        show(await res.json());
+      }
+
+      async function getUserByEmail() {
+        const email = document.getElementById("userEmail").value;
+        const res = await fetch(API + "/users/by-email?email=" + email, {
+          headers: authHeader(),
+        });
+        show(await res.json());
+      }
+
+      async function deleteUser() {
+        const id = document.getElementById("userId").value;
+        const res = await fetch(API + "/users/" + id, {
+          method: "DELETE",
+          headers: authHeader(),
+        });
+        show(await res.json());
+      }
+
+      async function updateUserPut() {
+        const id = document.getElementById("updateUserId").value;
+        const email = document.getElementById("updateEmail").value;
+        const role = document.getElementById("updateRole").value;
+
+        const body = {};
+        if (email) body.email = email;
+        if (role) body.role = role;
+
+        const res = await fetch(API + "/users/" + id, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...authHeader(),
+          },
+          body: JSON.stringify(body),
+        });
+
+        show(await res.json());
+      }
+
+      async function updateUserPatch() {
+        const id = document.getElementById("updateUserId").value;
+        const email = document.getElementById("updateEmail").value;
+        const role = document.getElementById("updateRole").value;
+
+        const body = {};
+        if (email) body.email = email;
+        if (role) body.role = role;
+
+        const res = await fetch(API + "/users/" + id, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...authHeader(),
+          },
+          body: JSON.stringify(body),
+        });
+
+        show(await res.json());
+      }
+
+      // ===== PRODUCTS =====
+      async function getProducts() {
+        const res = await fetch(API + "/products");
+        show(await res.json());
+      }
+
+      async function filterCategory() {
+        const c = document.getElementById("category").value;
+        const res = await fetch(API + "/products?category=" + c);
+        show(await res.json());
+      }
+
+      async function filterStatus() {
+        const s = document.getElementById("status").value;
+        const res = await fetch(API + "/products?status=" + s);
+        show(await res.json());
+      }
+
+      async function filterPrice() {
+        const min = document.getElementById("minPrice").value;
+        const max = document.getElementById("maxPrice").value;
+        const res = await fetch(
+          API + `/products?minPrice=${min}&maxPrice=${max}`
+        );
+        show(await res.json());
+      }
+
+      async function sortPriceAsc() {
+        const res = await fetch(API + "/products?sort=price_asc");
+        show(await res.json());
+      }
+
+      async function sortPriceDesc() {
+        const res = await fetch(API + "/products?sort=price_desc");
+        show(await res.json());
+      }
+
+      // ===== CHAT =====
+      async function getMessages() {
+        const res = await fetch(API + "/chat/messages", {
+          headers: authHeader(),
+        });
+        show(await res.json());
+      }
+    </script>
+  </body>
+</html>

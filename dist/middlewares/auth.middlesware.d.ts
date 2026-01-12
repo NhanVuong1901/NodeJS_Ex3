@@ -10,6 +10,6 @@ declare global {
         }
     }
 }
-export declare function requireAuth(req: Request, res: Response, next: NextFunction): void;
+export declare function requireAuth(req: Request, _res: Response, next: NextFunction): void;
 export declare function requireRole(role: "admin" | "customer"): (req: Request, _res: Response, next: NextFunction) => void;
 //# sourceMappingURL=auth.middlesware.d.ts.map

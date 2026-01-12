@@ -1,11 +1,12 @@
-import { env } from "../../config/env.js";
-import { verifyPassword } from "../../utils/crypto.js";
+import { ObjectId } from "mongodb";
 import { ApiError } from "../../utils/http.js";
+import { verifyPassword } from "../../utils/crypto.js";
 import {
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
 } from "../../utils/jwt.js";
+import { env } from "../../config/env.js";
 import type { UserDatabase } from "../user/user.database.js";
 import type { AuthDatabase } from "./auth.database.js";
 import type { RefreshTokenDoc } from "./auth.model.js";
@@ -28,10 +29,10 @@ export class AuthService {
   }) {
     const email = input.email.trim().toLowerCase();
     const user = await this.userDb.findByEmail(email);
-    if (!user) throw new ApiError(400, { message: "Invalid email" });
+    if (!user) throw new ApiError(401, { message: "Invalid credentials" });
 
     const ok = await verifyPassword(input.password, user.passwordHash);
-    if (!ok) throw new ApiError(401, { message: "Invalid password" });
+    if (!ok) throw new ApiError(401, { message: "Invalid credentials" });
 
     const accessToken = signAccessToken({
       sub: user._id.toString(),
@@ -63,35 +64,22 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async logout(refreshToken: string) {
-    let payload: { sub: string; jti: string };
-
-    try {
-      payload = verifyRefreshToken(refreshToken);
-    } catch {
-      return;
-    }
-    await this.authDb.revoke(payload.jti);
-  }
-
   async refresh(refreshToken: string) {
     let payload: { sub: string; jti: string };
     try {
       payload = verifyRefreshToken(refreshToken);
     } catch {
-      throw new ApiError(401, { message: "Invalid refresh token" });
+      throw new ApiError(401, { message: "Invalid or expired refresh token" });
     }
 
     const active = await this.authDb.findActiveByTokenId(payload.jti);
-
-    if (!active) {
-      throw new ApiError(401, { message: "Refresh token not found or Already Revoked" });
-    }
+    if (!active)
+      throw new ApiError(401, {
+        message: "Refresh token revoked or not found",
+      });
 
     const user = await this.userDb.findById(payload.sub);
-    if (!user) {
-      throw new ApiError(401, { message: "User is no longer existed" });
-    }
+    if (!user) throw new ApiError(401, { message: "User no longer exists" });
 
     const newTokenId = randomTokenId();
     const now = new Date();
@@ -100,7 +88,7 @@ export class AuthService {
     );
 
     const doc: RefreshTokenDoc = {
-      userId: user._id,
+      userId: new ObjectId(payload.sub),
       tokenId: newTokenId,
       issuedAt: now,
       expiresAt,
@@ -110,20 +98,27 @@ export class AuthService {
       ...(active.ip !== undefined ? { ip: active.ip } : {}),
     };
 
-    // BTVN: viết function helper để tách những đoạn code bị duplicated
-
     await this.authDb.insert(doc);
     await this.authDb.revoke(payload.jti, newTokenId);
+
     const accessToken = signAccessToken({
       sub: user._id.toString(),
       role: user.role,
     });
-
     const newRefreshToken = signRefreshToken({
       sub: user._id.toString(),
       jti: newTokenId,
     });
-
     return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  async logout(refreshToken: string) {
+    let payload: { sub: string; jti: string };
+    try {
+      payload = verifyRefreshToken(refreshToken);
+    } catch {
+      return;
+    }
+    await this.authDb.revoke(payload.jti);
   }
 }

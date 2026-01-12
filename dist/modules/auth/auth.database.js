@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { getDb } from "../../databse/mongo.js";
 export class AuthDatabase {
     col() {
@@ -14,11 +15,11 @@ export class AuthDatabase {
             expiresAt: { $gt: new Date() },
         });
     }
-    async revoke(tokenId, replaceByTokenId) {
+    async revoke(tokenId, replacedByTokenId) {
         await this.col().updateOne({ tokenId }, {
             $set: {
                 revokedAt: new Date(),
-                ...(replaceByTokenId ? { replaceByTokenId } : {}),
+                ...(replacedByTokenId ? { replacedByTokenId } : {}),
             },
         });
     }

@@ -7,6 +7,9 @@ export class UserDatabase {
     async list() {
         return this.col().find({}).limit(50).toArray();
     }
+    async findPublicByEmail(email) {
+        return this.col().findOne({ email }, { projection: { passwordHash: 0 } });
+    }
     async findByEmail(email) {
         return this.col().findOne({ email });
     }

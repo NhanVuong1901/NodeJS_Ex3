@@ -12,7 +12,3 @@ export type RefreshTokenDoc = {
   userAgent?: string;
   ip?: string;
 };
-
-export type UserDoc = {
-  username: Date;
-};

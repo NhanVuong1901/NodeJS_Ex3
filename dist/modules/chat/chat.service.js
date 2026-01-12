@@ -6,11 +6,11 @@ export class ChatService {
         this.chatDb = chatDb;
     }
     async postMessage(input) {
-        const text = (input.text || "").trim();
+        const text = (input.text ?? "").trim();
         if (!text)
-            throw new ApiError(400, { message: "Text message cannot be empty" });
-        if (text.length > 1000)
-            throw new ApiError(400, { message: "Text message is to long" });
+            throw new ApiError(400, { message: "Message text is required" });
+        if (text.length > 2000)
+            throw new ApiError(400, { message: "Message too long (max 2000)" });
         const now = new Date();
         return this.chatDb.insert({
             userId: new ObjectId(input.userId),
@@ -21,18 +21,18 @@ export class ChatService {
         });
     }
     async listHistory(input) {
-        const limit = parsePositive(input.limit, 5, 10);
+        const limit = parsePositiveInt(input.limit, 50, 200);
         let beforeDate;
         if (input.before) {
             const d = new Date(input.before);
             if (Number.isNaN(d.getTime()))
-                throw new ApiError(400, { message: "Invalid before 1970" });
+                throw new ApiError(400, { message: "Invalid before ISO date" });
             beforeDate = d;
         }
         return this.chatDb.list({ limit, before: beforeDate });
     }
 }
-function parsePositive(v, fallback, max) {
+function parsePositiveInt(v, fallback, max) {
     if (!v)
         return fallback;
     const n = Number(v);

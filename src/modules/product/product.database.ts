@@ -7,8 +7,8 @@ export type ProductListQuery = {
   category?: string;
   tags?: string[];
   status?: "active" | "inactive";
-  minPrice?: number;
-  maxPrice?: number;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
   sort?: "az" | "price_asc" | "price_desc";
   page: number;
   limit: number;

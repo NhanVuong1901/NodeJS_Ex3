@@ -5,9 +5,8 @@ export type UserEntity = UserDoc & {
 };
 export declare class UserDatabase {
     private col;
-    list(): Promise<Array<UserDoc & {
-        _id: ObjectId;
-    }>>;
+    list(): Promise<Array<UserEntity>>;
+    findPublicByEmail(email: string): Promise<UserEntity | null>;
     findByEmail(email: string): Promise<UserEntity | null>;
     findById(id: string): Promise<UserEntity | null>;
     create(doc: UserDoc): Promise<UserEntity>;

@@ -1,4 +1,4 @@
-import { MongoClient, Db } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { env } from "../config/env.js";
 let client = null;
 let db = null;
@@ -12,7 +12,7 @@ export async function connectMongo() {
 }
 export function getDb() {
     if (!db)
-        throw new Error("MongoDB is not connected");
+        throw new Error("MongoDb is not connected. Call function connectMongo() first.");
     return db;
 }
 export async function disconnectMongo() {

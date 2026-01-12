@@ -11,15 +11,12 @@ export class ChatService {
     role: "customer" | "admin";
     text: string;
   }) {
-    const text = (input.text || "").trim();
-
-    if (!text)
-      throw new ApiError(400, { message: "Text message cannot be empty" });
-    if (text.length > 1000)
-      throw new ApiError(400, { message: "Text message is to long" });
+    const text = (input.text ?? "").trim();
+    if (!text) throw new ApiError(400, { message: "Message text is required" });
+    if (text.length > 2000)
+      throw new ApiError(400, { message: "Message too long (max 2000)" });
 
     const now = new Date();
-
     return this.chatDb.insert({
       userId: new ObjectId(input.userId),
       userEmail: input.userEmail,
@@ -29,26 +26,28 @@ export class ChatService {
     });
   }
 
-  async listHistory(input: { limit?: string; before?: Date }) {
-    const limit = parsePositive(input.limit, 5, 10);
+  async listHistory(input: { limit?: string; before?: string }) {
+    const limit = parsePositiveInt(input.limit, 50, 200);
 
     let beforeDate: Date | undefined;
     if (input.before) {
       const d = new Date(input.before);
       if (Number.isNaN(d.getTime()))
-        throw new ApiError(400, { message: "Invalid before 1970" });
+        throw new ApiError(400, { message: "Invalid before ISO date" });
       beforeDate = d;
     }
+
     return this.chatDb.list({ limit, before: beforeDate });
   }
 }
 
-function parsePositive(v: string | undefined, fallback: number, max: number) {
+function parsePositiveInt(
+  v: string | undefined,
+  fallback: number,
+  max: number
+) {
   if (!v) return fallback;
-
   const n = Number(v);
-
   if (!Number.isInteger(n) || n <= 0) return fallback;
-
   return Math.min(n, max);
 }

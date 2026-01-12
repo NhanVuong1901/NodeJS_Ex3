@@ -3,9 +3,7 @@ import type { UserRole } from "./user.model.js";
 export declare class UserService {
     private readonly userDb;
     constructor(userDb: UserDatabase);
-    list(): Promise<(import("./user.model.js").UserDoc & {
-        _id: import("bson").ObjectId;
-    })[]>;
+    list(): Promise<UserEntity[]>;
     register(input: {
         email: string;
         password: string;

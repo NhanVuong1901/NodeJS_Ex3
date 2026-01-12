@@ -1,6 +1,6 @@
-import type { ObjectId } from "mongodb";
-import type { RefreshTokenDoc } from "./auth.model.js";
+import { ObjectId } from "mongodb";
 import { getDb } from "../../databse/mongo.js";
+import type { RefreshTokenDoc } from "./auth.model.js";
 
 export type RefreshTokenEntity = RefreshTokenDoc & { _id: ObjectId };
 
@@ -24,13 +24,13 @@ export class AuthDatabase {
     }) as Promise<RefreshTokenEntity | null>;
   }
 
-  async revoke(tokenId: string, replaceByTokenId?: string): Promise<void> {
+  async revoke(tokenId: string, replacedByTokenId?: string): Promise<void> {
     await this.col().updateOne(
       { tokenId },
       {
         $set: {
           revokedAt: new Date(),
-          ...(replaceByTokenId ? { replaceByTokenId } : {}),
+          ...(replacedByTokenId ? { replacedByTokenId } : {}),
         },
       }
     );

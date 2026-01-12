@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
 
   if (!header?.startsWith("Bearer ")) {
@@ -28,18 +28,16 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     req.auth = { userId: payload.sub, role: payload.role };
     next();
   } catch (error) {
-    throw new ApiError(401, { message: "Invalid or expired access token" });
+    throw new ApiError(401, { message: "Invalid or Expired access token." });
   }
 }
 
 export function requireRole(role: "admin" | "customer") {
   return (req: Request, _res: Response, next: NextFunction) => {
-    if (!req.auth) throw new ApiError(401, { message: "Unauthorized" });
-
+    if (!req.auth) throw new ApiError(401, { message: "UnAuthorized" });
     if (req.auth.role !== role) {
       throw new ApiError(403, { message: "Forbidden" });
     }
-
     next();
   };
 }

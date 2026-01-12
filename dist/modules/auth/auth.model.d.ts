@@ -9,7 +9,4 @@ export type RefreshTokenDoc = {
     userAgent?: string;
     ip?: string;
 };
-export type UserDoc = {
-    username: Date;
-};
 //# sourceMappingURL=auth.model.d.ts.map

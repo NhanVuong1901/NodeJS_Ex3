@@ -13,10 +13,10 @@ export declare class AuthService {
         accessToken: string;
         refreshToken: string;
     }>;
-    logout(refreshToken: string): Promise<void>;
     refresh(refreshToken: string): Promise<{
         accessToken: string;
         refreshToken: string;
     }>;
+    logout(refreshToken: string): Promise<void>;
 }
 //# sourceMappingURL=auth.service.d.ts.map
